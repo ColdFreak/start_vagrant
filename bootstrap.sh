@@ -2,7 +2,6 @@
 
 # Exit immediately if a command exits with a non-zero status.
 set -e 
-#
 function show() {
     echo "\$ $@"
     eval "$@"
@@ -66,7 +65,7 @@ function show() {
 
 #show aptitude install -y nodejs
 
-show aptitude install -y exuberant-ctags
+#show aptitude install -y exuberant-ctags
 #show git clone git://github.com/amix/vimrc.git /home/vagrant/.vim_runtime
 #
 #show sh /home/vagrant/.vim_runtime/install_awesome_vimrc.sh
@@ -74,6 +73,12 @@ show aptitude install -y exuberant-ctags
 #show mv /root/.vimrc /home/vagrant/
 #show chown vagrant:vagrant /home/vagrant/.vimrc
 
+debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password root'
+debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password root'
+
+show aptitude install -y mysql-server-5.5
+show update-rc.d -f mysql remove
+show service mysql stop
 
 tmux_conf=$(cat <<EOF 
 # https://github.com/seebi/tmux-colors-solarized/blob/master/tmuxcolors-256.conf
@@ -177,7 +182,8 @@ if-shell "[[ `tmux -V` == *1.9* ]]" 'unbind v; bind v split-window -h -c "#{pane
 if-shell "[[ `tmux -V` == *1.9* ]]" 'unbind %; bind % split-window -h -c "#{pane_current_path}"'
 EOF
 )
-echo "${tmux_conf}" > /home/vagrant/.tmux.conf
+
+test -f /home/vagrant/.tmux.conf ||  echo "${tmux_conf}" > /home/vagrant/.tmux.conf
 
 bashrc=$(cat <<EOF
 export EDITOR='vim'
