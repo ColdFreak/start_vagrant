@@ -6,79 +6,89 @@ function show() {
     echo "\$ $@"
     eval "$@"
 }
-#
-## login as root
-#show apt-get update
-#
-#show apt-get install -y aptitude
-#
-#show add-apt-repository ppa:pi-rho/dev -y
-#show add-apt-repository ppa:nginx/stable -y
-#show add-apt-repository ppa:chris-lea/node.js -y
-#
-## update again
-#show apt-get update
-#
-#show aptitude install -y nginx
-#show update-rc.d -f nginx remove
-#show service nginx stop
-#
-## this will also install apache2
-#show aptitude install -y php5
-#show aptitude install -y apache2
-#
-#service apache2 stop
-## remove all the symbolic link 
-#update-rc.d -f apache2 remove
-#show aptitude remove -y vim vim-runtime
-#
-#show aptitude remove -y vim-tiny vim-common
-#
-#show aptitude install -y vim
-#
-#show aptitude install -y tmux
-#
-#show aptitude install -y git-core
-#
-## disable postgresql in all the run levels
-#show aptitude install -y postgresql
-#show update-rc.d -f postgresql remove
-#
-#show wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
-#show dpkg -i erlang-solutions_1.0_all.deb
-#show rm erlang-solutions_1.0_all.deb
-#
-## update erlang repository
-#show apt-get update
-#
-#
-#show aptitude install -y erlang
-#
+
+# login as root
+show apt-get update
+
+show apt-get install -y aptitude
+#7.4のvim を入れるために
+show add-apt-repository ppa:pi-rho/dev -y
+# 新しいnginxを入れるため
+show add-apt-repository ppa:nginx/stable -y
+# 新しいnodejsをインストールため
+show add-apt-repository ppa:chris-lea/node.js -y
+
+show add-apt-repository ppa:chris-lea/redis-server -y
+# update again
+show apt-get update
+
+show aptitude install -y nginx
+show update-rc.d -f nginx remove
+show service nginx stop
+
+# this will also install apache2
+show aptitude install -y php5
+show aptitude install -y apache2
+
+service apache2 stop
+# remove all the symbolic link 
+update-rc.d -f apache2 remove
+
+# nginxにphpを動かすため
+aptitude install -y php5-fpm 
+service php5-fpm stop
+
+#古いvimをアンインストー
+show aptitude remove -y vim vim-runtime
+
+show aptitude remove -y vim-tiny vim-common
+
+show aptitude install -y vim
+
+show aptitude install -y tmux
+
+show aptitude install -y git-core
+
+# disable postgresql in all the run levels
+show aptitude install -y postgresql
+show update-rc.d -f postgresql remove
+
+show wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+show dpkg -i erlang-solutions_1.0_all.deb
+show rm erlang-solutions_1.0_all.deb
+
+# update erlang repository
+show apt-get update
+
+
+show aptitude install -y erlang
+
 ## install elixir from git
-##show git clone https://github.com/elixir-lang/elixir.git
-##show cd elixir
-##show make clean test
-#
-#show aptitude install -y rabbitmq-server
+#show git clone https://github.com/elixir-lang/elixir.git
+#show cd elixir
+#show make clean test
 
-#show aptitude install -y most
+show aptitude install -y rabbitmq-server
 
-#show aptitude install -y nodejs
+show aptitude install -y most
 
-#show aptitude install -y exuberant-ctags
-#show git clone git://github.com/amix/vimrc.git /home/vagrant/.vim_runtime
-#
-#show sh /home/vagrant/.vim_runtime/install_awesome_vimrc.sh
-#show chown -R vagrant:vagrant /home/vagrant/.vim_runtime
-#show mv /root/.vimrc /home/vagrant/
-#show chown vagrant:vagrant /home/vagrant/.vimrc
+show aptitude install -y nodejs
+
+show aptitude install -y exuberant-ctags
+show git clone git://github.com/amix/vimrc.git /home/vagrant/.vim_runtime
+show sh /home/vagrant/.vim_runtime/install_awesome_vimrc.sh
+show chown -R vagrant:vagrant /home/vagrant/.vim_runtime
+show mv /root/.vimrc /home/vagrant/
+show chown vagrant:vagrant /home/vagrant/.vimrc
 
 debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password root'
 debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password root'
-
 show aptitude install -y mysql-server-5.5
 show update-rc.d -f mysql remove
 show service mysql stop
+
+show aptitude install -y redis-server
+show service redis-server stop
 
 tmux_conf=$(cat <<EOF 
 # https://github.com/seebi/tmux-colors-solarized/blob/master/tmuxcolors-256.conf
@@ -203,5 +213,4 @@ EOF
 )
 echo "${bashrc}" >> /home/vagrant/.bashrc
 
-
-
+echo "Enjoy ^^"
