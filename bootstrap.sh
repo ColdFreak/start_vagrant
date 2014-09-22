@@ -8,9 +8,7 @@ function show() {
 }
 
 # login as root
-show apt-get update
 
-show apt-get install -y aptitude
 #7.4のvim を入れるために
 show add-apt-repository ppa:pi-rho/dev -y
 # 新しいnginxを入れるため
@@ -19,12 +17,25 @@ show add-apt-repository ppa:nginx/stable -y
 show add-apt-repository ppa:chris-lea/node.js -y
 
 show add-apt-repository ppa:chris-lea/redis-server -y
-# update again
+
+show wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+show dpkg -i erlang-solutions_1.0_all.deb
+show rm erlang-solutions_1.0_all.deb
+
+# update erlang repository
 show apt-get update
 
-show aptitude install -y nginx
-show update-rc.d -f nginx remove
-show service nginx stop
+show aptitude install -y nginx php5-fpm php5-xdebug
+#show update-rc.d -f nginx remove
+
+
+cp -a /vagrant/default /etc/nginx/sites-enabled/default
+cp -a /vagrant/php.ini  /etc/php5/fpm/php.ini
+cp -a /vagrant/www.conf /etc/php5/fpm/pool.d/www.conf
+cp -a /vagrant/index.html /usr/share/nginx/html/index.html
+
+show service php5-fpm restart
+show service nginx restart
 
 # this will also install apache2
 show aptitude install -y php5
@@ -34,32 +45,36 @@ service apache2 stop
 # remove all the symbolic link 
 update-rc.d -f apache2 remove
 
-# nginxにphpを動かすため
-aptitude install -y php5-fpm 
-service php5-fpm stop
 
 #古いvimをアンインストー
-show aptitude remove -y vim vim-runtime
+show aptitude remove -y vim vim-runtime vim-tiny vim-common
 
-show aptitude remove -y vim-tiny vim-common
+show aptitude install -y vim tmux git-core
 
-show aptitude install -y vim
-
-show aptitude install -y tmux
-
-show aptitude install -y git-core
 
 # disable postgresql in all the run levels
 show aptitude install -y postgresql
-show update-rc.d -f postgresql remove
+#show update-rc.d -f postgresql remove
 
-show wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
-show dpkg -i erlang-solutions_1.0_all.deb
-show rm erlang-solutions_1.0_all.deb
+su postgres << EOF
+psql -c "CREATE USER adp_test_user WITH PASSWORD 'abc123';"
+EOF
 
-# update erlang repository
-show apt-get update
+su postgres << EOF
+psql -c "ALTER USER adp_test_user WITH SUPERUSER; "
+EOF
 
+su postgres << EOF
+psql -c "CREATE DATABASE adp_test_bid WITH OWNER adp_test_user ENCODING 'UTF8';"
+EOF
+
+su postgres << EOF
+psql -c "CREATE DATABASE adp_test_manage WITH OWNER adp_test_user ENCODING 'UTF8';"
+EOF
+
+su postgres << EOF
+psql -c "CREATE DATABASE adp_test_users WITH OWNER adp_test_user ENCODING 'UTF8';"
+EOF
 
 show aptitude install -y erlang
 
@@ -71,15 +86,18 @@ show aptitude install -y erlang
 show aptitude install -y rabbitmq-server
 
 show aptitude install -y most
-
+#
 show aptitude install -y nodejs
 
 show aptitude install -y exuberant-ctags
 show git clone git://github.com/amix/vimrc.git /home/vagrant/.vim_runtime
 show sh /home/vagrant/.vim_runtime/install_awesome_vimrc.sh
+show git clone git://github.com/joonty/vdebug.git /home/vagrant/.vim_runtime/sources_forked/vdebug
+show cp -a /vagrant/my_configs.vim /home/vagrant/.vim_runtime/my_configs.vim
 show chown -R vagrant:vagrant /home/vagrant/.vim_runtime
 show mv /root/.vimrc /home/vagrant/
 show chown vagrant:vagrant /home/vagrant/.vimrc
+show rm -rf /home/vagrant/.vim_runtime/sources_non_forked/vim-zenroom2/
 
 debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password root'
 debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password root'

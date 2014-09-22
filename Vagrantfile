@@ -11,7 +11,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |ubox|
 
   # Every Vagrant virtual environment requires a box to build off of.
   ubox.vm.box = "ubuntu/trusty64"
+  #ubox.vm.network "public_network"
   ubox.vm.network "private_network", ip: "192.168.50.10"
+  ubox.vm.network "forwarded_port", host: 9000, guest: 9000
+  #ubox.vm.network "public_network", ip: "192.168.100.10"
   ubox.vm.provision :shell, :path => "bootstrap.sh"
 
   # Disable automatic box update checking. If you disable this, then
@@ -22,7 +25,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |ubox|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
